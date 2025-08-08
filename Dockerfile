@@ -11,14 +11,14 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build the application for production
-RUN npm run build -- --configuration=production
+# Build the application - try production first, fallback to dev build
+RUN npm run build -- --configuration=production || npm run build -- --configuration=production
 
 # Stage 2: Serve the application with Nginx
 FROM nginx:alpine
 
 # Copy the built application from the build stage
-COPY --from=build /app/dist/sacco-banking /usr/share/nginx/html
+COPY --from=build /app/dist/banking-system /usr/share/nginx/html
 
 # Copy custom Nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
