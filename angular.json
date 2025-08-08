@@ -70,7 +70,12 @@
             "development": {
               "browserTarget": "banking-system:build:development"
             }
+
           },
+          "options": {
+    "browserTarget": "banking-system:build",
+    "proxyConfig": "src/proxy.conf.json"
+  },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
@@ -100,5 +105,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "43bd6358-b4b5-47c3-9dc9-820d34ae7f2b"
   }
 }

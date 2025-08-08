@@ -1,0 +1,211 @@
+<div class="register-container">
+      <div class="register-card">
+        <div class="logo-section">
+          <div class="logo">
+            <i class="fas fa-university"></i>
+            <h1>SACCO Pro</h1>
+          </div>
+          <p class="tagline">Join Our Savings & Credit Cooperative</p>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="register-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="memberNumber">Member Number *</label>
+              <input
+                id="memberNumber"
+                type="text"
+                formControlName="memberNumber"
+                placeholder="e.g., MB001"
+                class="form-control"
+                [class.error]="registerForm.get('memberNumber')?.errors && registerForm.get('memberNumber')?.touched">
+              <div class="error-message" *ngIf="registerForm.get('memberNumber')?.errors?.['required'] && registerForm.get('memberNumber')?.touched">
+                Member number is required
+              </div>
+              <div class="error-message" *ngIf="registerForm.get('memberNumber')?.errors?.['pattern'] && registerForm.get('memberNumber')?.touched">
+                Member number should start with 'MB' followed by numbers
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half-width">
+              <label for="firstName">First Name *</label>
+              <input
+                id="firstName"
+                type="text"
+                formControlName="firstName"
+                placeholder="Enter your first name"
+                class="form-control"
+                [class.error]="registerForm.get('firstName')?.errors && registerForm.get('firstName')?.touched">
+              <div class="error-message" *ngIf="registerForm.get('firstName')?.errors?.['required'] && registerForm.get('firstName')?.touched">
+                First name is required
+              </div>
+              <div class="error-message" *ngIf="registerForm.get('firstName')?.errors?.['minlength'] && registerForm.get('firstName')?.touched">
+                First name must be at least 2 characters
+              </div>
+            </div>
+
+            <div class="form-group half-width">
+              <label for="lastName">Last Name *</label>
+              <input
+                id="lastName"
+                type="text"
+                formControlName="lastName"
+                placeholder="Enter your last name"
+                class="form-control"
+                [class.error]="registerForm.get('lastName')?.errors && registerForm.get('lastName')?.touched">
+              <div class="error-message" *ngIf="registerForm.get('lastName')?.errors?.['required'] && registerForm.get('lastName')?.touched">
+                Last name is required
+              </div>
+              <div class="error-message" *ngIf="registerForm.get('lastName')?.errors?.['minlength'] && registerForm.get('lastName')?.touched">
+                Last name must be at least 2 characters
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                placeholder="Enter your email address"
+                class="form-control"
+                [class.error]="registerForm.get('email')?.errors && registerForm.get('email')?.touched">
+              <div class="error-message" *ngIf="registerForm.get('email')?.errors?.['required'] && registerForm.get('email')?.touched">
+                Email address is required
+              </div>
+              <div class="error-message" *ngIf="registerForm.get('email')?.errors?.['email'] && registerForm.get('email')?.touched">
+                Please enter a valid email address
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phoneNumber">Phone Number *</label>
+              <input
+                id="phoneNumber"
+                type="tel"
+                formControlName="phoneNumber"
+                placeholder="254700000000"
+                class="form-control"
+                [class.error]="registerForm.get('phoneNumber')?.errors && registerForm.get('phoneNumber')?.touched">
+              <div class="error-message" *ngIf="registerForm.get('phoneNumber')?.errors?.['required'] && registerForm.get('phoneNumber')?.touched">
+                Phone number is required
+              </div>
+              <div class="error-message" *ngIf="registerForm.get('phoneNumber')?.errors?.['pattern'] && registerForm.get('phoneNumber')?.touched">
+                Please enter a valid phone number (254XXXXXXXXX)
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half-width">
+              <label for="password">Password *</label>
+              <div class="password-input">
+                <input
+                  id="password"
+                  [type]="showPassword ? 'text' : 'password'"
+                  formControlName="password"
+                  placeholder="Create a strong password"
+                  class="form-control"
+                  [class.error]="registerForm.get('password')?.errors && registerForm.get('password')?.touched">
+                <button type="button" class="password-toggle" (click)="togglePasswordVisibility()">
+                  <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+                </button>
+              </div>
+              <div class="error-message" *ngIf="registerForm.get('password')?.errors?.['required'] && registerForm.get('password')?.touched">
+                Password is required
+              </div>
+              <div class="error-message" *ngIf="registerForm.get('password')?.errors?.['minlength'] && registerForm.get('password')?.touched">
+                Password must be at least 8 characters
+              </div>
+            </div>
+
+            <div class="form-group half-width">
+              <label for="confirmPassword">Confirm Password *</label>
+              <div class="password-input">
+                <input
+                  id="confirmPassword"
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  formControlName="confirmPassword"
+                  placeholder="Confirm your password"
+                  class="form-control"
+                  [class.error]="registerForm.get('confirmPassword')?.errors && registerForm.get('confirmPassword')?.touched">
+                <button type="button" class="password-toggle" (click)="toggleConfirmPasswordVisibility()">
+                  <i class="fas" [class.fa-eye]="!showConfirmPassword" [class.fa-eye-slash]="showConfirmPassword"></i>
+                </button>
+              </div>
+              <div class="error-message" *ngIf="registerForm.get('confirmPassword')?.errors?.['required'] && registerForm.get('confirmPassword')?.touched">
+                Please confirm your password
+              </div>
+              <div class="error-message" *ngIf="registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched">
+                Passwords do not match
+              </div>
+            </div>
+          </div>
+
+          <!-- Password Strength Indicator -->
+          <div class="password-strength" *ngIf="registerForm.get('password')?.value">
+            <div class="strength-label">Password Strength:</div>
+            <div class="strength-bar">
+              <div class="strength-fill" [class]="passwordStrength.class" [style.width]="passwordStrength.width + '%'"></div>
+            </div>
+            <div class="strength-text" [class]="passwordStrength.class">{{ passwordStrength.text }}</div>
+          </div>
+
+          <!-- Terms and Conditions -->
+          <div class="form-group checkbox-group">
+            <label class="checkbox-container">
+              <input type="checkbox" formControlName="agreeToTerms">
+              <span class="checkmark"></span>
+              <span class="checkbox-text">
+                I agree to the <a href="#" target="_blank">Terms and Conditions</a> and
+                <a href="#" target="_blank">Privacy Policy</a>
+              </span>
+            </label>
+            <div class="error-message" *ngIf="registerForm.get('agreeToTerms')?.errors?.['required'] && registerForm.get('agreeToTerms')?.touched">
+              You must agree to the terms and conditions
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn-primary"
+            [disabled]="registerForm.invalid || isLoading">
+            <i class="fas fa-user-plus" *ngIf="!isLoading"></i>
+            <i class="fas fa-spinner fa-spin" *ngIf="isLoading"></i>
+            {{ isLoading ? 'Creating Account...' : 'Create Account' }}
+          </button>
+
+          <div class="register-options">
+            <p>Already have an account? <a routerLink="/login" class="login-link">Sign In</a></p>
+          </div>
+        </form>
+
+        <div class="membership-benefits">
+          <h3>Membership Benefits</h3>
+          <div class="benefits-grid">
+            <div class="benefit-item">
+              <i class="fas fa-piggy-bank"></i>
+              <span>Competitive Savings Rates</span>
+            </div>
+            <div class="benefit-item">
+              <i class="fas fa-hand-holding-usd"></i>
+              <span>Low-Interest Loans</span>
+            </div>
+            <div class="benefit-item">
+              <i class="fas fa-users"></i>
+              <span>Community Support</span>
+            </div>
+            <div class="benefit-item">
+              <i class="fas fa-chart-pie"></i>
+              <span>Financial Planning</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

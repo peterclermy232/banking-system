@@ -1,0 +1,236 @@
+<div class="modal-overlay" *ngIf="isVisible" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h2>
+        <i class="fas fa-user-edit"></i>
+        Edit Member Details
+      </h2>
+      <button class="btn-close" (click)="closeModal()" type="button">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Member Info Banner -->
+    <div class="member-info-banner" *ngIf="member">
+      <div class="member-avatar">
+        {{ member.firstName.charAt(0) }}{{ member.lastName.charAt(0) }}
+      </div>
+      <div class="member-basic-info">
+        <h3>{{ member.firstName }} {{ member.lastName }}</h3>
+        <p>Member #{{ member.memberNumber }}</p>
+      </div>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="modal-content">
+      <!-- Tab Navigation -->
+      <div class="tab-navigation">
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'personal'"
+          (click)="switchTab('personal')"
+          type="button">
+          <i class="fas fa-user"></i>
+          Personal Information
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'contact'"
+          (click)="switchTab('contact')"
+          type="button">
+          <i class="fas fa-address-book"></i>
+          Contact Information
+        </button>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="editForm" (ngSubmit)="onSubmit()" novalidate>
+        <!-- Personal Information Tab -->
+        <div class="tab-content" *ngIf="activeTab === 'personal'">
+          <div class="form-section">
+            <h4>
+              <i class="fas fa-user"></i>
+              Personal Details
+            </h4>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firstName">
+                  First Name <span class="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="firstName"
+                  formControlName="firstName"
+                  class="form-control"
+                  [class.error]="isFieldInvalid('firstName')"
+                  placeholder="Enter first name">
+                <div class="error-message" *ngIf="isFieldInvalid('firstName')">
+                  {{ getFieldError('firstName') }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="lastName">
+                  Last Name <span class="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  formControlName="lastName"
+                  class="form-control"
+                  [class.error]="isFieldInvalid('lastName')"
+                  placeholder="Enter last name">
+                <div class="error-message" *ngIf="isFieldInvalid('lastName')">
+                  {{ getFieldError('lastName') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="idNumber">ID Number</label>
+                <input
+                  type="text"
+                  id="idNumber"
+                  formControlName="idNumber"
+                  class="form-control"
+                  [class.error]="isFieldInvalid('idNumber')"
+                  placeholder="Enter ID number"
+                  maxlength="8">
+                <div class="error-message" *ngIf="isFieldInvalid('idNumber')">
+                  {{ getFieldError('idNumber') }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="dateOfBirth">Date of Birth</label>
+                <input
+                  type="date"
+                  id="dateOfBirth"
+                  formControlName="dateOfBirth"
+                  class="form-control"
+                  [class.error]="isFieldInvalid('dateOfBirth')">
+                <div class="error-message" *ngIf="isFieldInvalid('dateOfBirth')">
+                  {{ getFieldError('dateOfBirth') }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Employment Information -->
+            <div class="form-section">
+              <h5>
+                <i class="fas fa-briefcase"></i>
+                Employment Information (Optional)
+              </h5>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="employer">Employer</label>
+                  <input
+                    type="text"
+                    id="employer"
+                    formControlName="employer"
+                    class="form-control"
+                    placeholder="Enter employer name">
+                </div>
+
+                <div class="form-group">
+                  <label for="monthlyIncome">Monthly Income (KSH)</label>
+                  <input
+                    type="number"
+                    id="monthlyIncome"
+                    formControlName="monthlyIncome"
+                    class="form-control"
+                    [class.error]="isFieldInvalid('monthlyIncome')"
+                    placeholder="Enter monthly income"
+                    min="0"
+                    step="100">
+                  <div class="error-message" *ngIf="isFieldInvalid('monthlyIncome')">
+                    {{ getFieldError('monthlyIncome') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Information Tab -->
+        <div class="tab-content" *ngIf="activeTab === 'contact'">
+          <div class="form-section">
+            <h4>
+              <i class="fas fa-address-book"></i>
+              Contact Details
+            </h4>
+            
+            <div class="form-group">
+              <label for="email">
+                Email Address <span class="required">*</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                formControlName="email"
+                class="form-control"
+                [class.error]="isFieldInvalid('email')"
+                placeholder="Enter email address">
+              <div class="error-message" *ngIf="isFieldInvalid('email')">
+                {{ getFieldError('email') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="phoneNumber">
+                Phone Number <span class="required">*</span>
+              </label>
+              <input
+                type="tel"
+                id="phoneNumber"
+                formControlName="phoneNumber"
+                class="form-control"
+                [class.error]="isFieldInvalid('phoneNumber')"
+                placeholder="e.g., +254701234567 or 0701234567">
+              <div class="help-text">
+                <i class="fas fa-info-circle"></i>
+                Enter a valid Kenyan phone number
+              </div>
+              <div class="error-message" *ngIf="isFieldInvalid('phoneNumber')">
+                {{ getFieldError('phoneNumber') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="physicalAddress">Physical Address</label>
+              <textarea
+                id="physicalAddress"
+                formControlName="physicalAddress"
+                class="form-control"
+                rows="3"
+                placeholder="Enter physical address"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button 
+            type="button" 
+            class="btn-secondary" 
+            (click)="closeModal()"
+            [disabled]="isSubmitting">
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn-primary"
+            [disabled]="editForm.invalid || isSubmitting">
+            <i class="fas fa-spinner fa-spin" *ngIf="isSubmitting"></i>
+            <i class="fas fa-save" *ngIf="!isSubmitting"></i>
+            {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

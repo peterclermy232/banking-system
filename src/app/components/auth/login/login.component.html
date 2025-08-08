@@ -1,0 +1,83 @@
+<div class="login-container">
+      <div class="login-card">
+        <div class="logo-section">
+          <div class="logo">
+            <i class="fas fa-university"></i>
+            <h1>SACCO Pro</h1>
+          </div>
+          <p class="tagline">Modern Banking for Savings & Credit Cooperatives</p>
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
+          <div class="form-group">
+            <label for="memberNumber">Member Number</label>
+            <input
+              id="memberNumber"
+              type="text"
+              formControlName="memberNumber"
+              placeholder="Enter your member number"
+              class="form-control"
+              [class.error]="loginForm.get('memberNumber')?.errors && loginForm.get('memberNumber')?.touched">
+            <div class="error-message" *ngIf="loginForm.get('memberNumber')?.errors?.['required'] && loginForm.get('memberNumber')?.touched">
+              Member number is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              formControlName="password"
+              placeholder="Enter your password"
+              class="form-control"
+              [class.error]="loginForm.get('password')?.errors && loginForm.get('password')?.touched">
+            <div class="error-message" *ngIf="loginForm.get('password')?.errors?.['required'] && loginForm.get('password')?.touched">
+              Password is required
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn-primary"
+            [disabled]="loginForm.invalid || isLoading">
+            <i class="fas fa-sign-in-alt" *ngIf="!isLoading"></i>
+            <i class="fas fa-spinner fa-spin" *ngIf="isLoading"></i>
+            {{ isLoading ? 'Signing In...' : 'Sign In' }}
+          </button>
+
+          <div class="login-options">
+            <a href="#" class="forgot-password">Forgot Password?</a>
+            <a routerLink="/register" class="register-link">Register New Member</a>
+          </div>
+        </form>
+
+        <div class="demo-credentials" *ngIf="!environment.production">
+          <h4>Demo Credentials</h4>
+          <p><strong>Member Number:</strong> MB006</p>
+          <p><strong>Password:</strong> password123</p>
+        </div>
+
+        <div class="features-preview">
+          <h3>Platform Features</h3>
+          <div class="feature-grid">
+            <div class="feature-item">
+              <i class="fas fa-mobile-alt"></i>
+              <span>Mobile Banking</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-shield-alt"></i>
+              <span>Secure Transactions</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-chart-line"></i>
+              <span>Investment Tracking</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-users"></i>
+              <span>Member Portal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

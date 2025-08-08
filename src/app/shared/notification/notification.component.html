@@ -1,0 +1,35 @@
+<div class="notification-container">
+      <div class="notification"
+           *ngFor="let notification of notifications; trackBy: trackByFn"
+           [class]="'notification-' + notification.type"
+           [@slideInOut]
+           (click)="removeNotification(notification.id)">
+
+        <div class="notification-icon">
+          <i class="fas"
+             [class.fa-check-circle]="notification.type === 'success'"
+             [class.fa-exclamation-triangle]="notification.type === 'warning'"
+             [class.fa-times-circle]="notification.type === 'error'"
+             [class.fa-info-circle]="notification.type === 'info'"></i>
+        </div>
+
+        <div class="notification-content">
+          <div class="notification-title" *ngIf="notification.title">
+            {{ notification.title }}
+          </div>
+          <div class="notification-message">
+            {{ notification.message }}
+          </div>
+        </div>
+
+        <button class="notification-close" (click)="removeNotification(notification.id)">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <!-- Progress bar for auto-dismiss -->
+        <div class="notification-progress"
+             *ngIf="notification.duration && notification.duration > 0"
+             [style.animation-duration]="notification.duration + 'ms'">
+        </div>
+      </div>
+    </div>

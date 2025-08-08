@@ -1,0 +1,135 @@
+<div class="transfer-container">
+  <div class="page-header">
+    <h1>Send Money</h1>
+    <p>Transfer funds to other members or external accounts</p>
+  </div>
+
+  <div class="transfer-content">
+    <div class="transfer-form-card">
+      <form [formGroup]="transferForm" (ngSubmit)="onTransfer()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>From Account</label>
+            <select formControlName="fromAccountNumber" class="form-control">
+              <option value="">Select account</option>
+              <option *ngFor="let account of memberAccounts" [value]="account.accountNumber">
+                {{ account.accountType }} Account (KSH {{ account.balance | number:'1.2-2' }})
+              </option>
+            </select>
+
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Transfer Type</label>
+            <div class="transfer-types">
+              <label class="radio-option">
+                <input type="radio" formControlName="transferType" value="INTERNAL" />
+                <span class="radio-custom"></span>
+                Internal Transfer
+              </label>
+              <label class="radio-option">
+                <input type="radio" formControlName="transferType" value="EXTERNAL" />
+                <span class="radio-custom"></span>
+                External Transfer
+              </label>
+              <label class="radio-option">
+                <input type="radio" formControlName="transferType" value="MPESA" />
+                <span class="radio-custom"></span>
+                M-Pesa
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Recipient</label>
+            <input
+              type="text"
+              formControlName="toAccountNumber"
+              placeholder="Member number or phone number"
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Amount (KSH)</label>
+            <input
+              type="number"
+              formControlName="amount"
+              placeholder="0.00"
+              class="form-control amount-input"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Description (Optional)</label>
+            <textarea
+              formControlName="description"
+              placeholder="What's this transfer for?"
+              class="form-control"
+              rows="3"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Reference (Optional)</label>
+            <input
+              type="text"
+              formControlName="reference"
+              placeholder="Unique transaction reference"
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div class="transfer-summary" *ngIf="transferForm.get('amount')?.value > 0">
+          <h3>Transfer Summary</h3>
+          <div class="summary-item">
+            <span>Amount:</span>
+            <span>KSH {{ transferForm.get('amount')?.value | number: '1.2-2' }}</span>
+          </div>
+          <div class="summary-item">
+            <span>Transaction Fee:</span>
+            <span>KSH {{ calculateFee() | number: '1.2-2' }}</span>
+          </div>
+          <div class="summary-item total">
+            <span>Total:</span>
+            <span>KSH {{ getTotal() | number: '1.2-2' }}</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="transferForm.invalid">
+          <i class="fas fa-paper-plane"></i> Send Money
+        </button>
+      </form>
+    </div>
+
+    <div class="recent-recipients">
+      <h3>Recent Recipients</h3>
+      <div class="recipient-list">
+        <div class="recipient-item" *ngFor="let recipient of recentRecipients">
+          <div class="recipient-avatar">
+            {{ recipient.accountNumber.charAt(0) }}
+          </div>
+          <div class="recipient-info">
+            <h4>{{ recipient.name }}</h4>
+            <p>{{ recipient.memberNumber }}</p>
+            <p>{{ recipient.accountNumber }}</p>
+          </div>
+          <button class="btn-secondary" (click)="selectRecipient(recipient)">
+            Select
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

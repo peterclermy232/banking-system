@@ -1,0 +1,52 @@
+<nav class="navbar">
+      <div class="navbar-left">
+        <button class="mobile-menu-btn" (click)="toggleMobileMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="navbar-brand">
+          <i class="fas fa-university"></i>
+          <span>SACCO Pro</span>
+        </div>
+      </div>
+
+      <div class="navbar-search">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search transactions, members..." [(ngModel)]="searchTerm">
+      </div>
+
+      <div class="navbar-actions">
+        <div class="notification-icon" (click)="toggleNotifications()">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+        </div>
+
+        <div class="user-menu" [class.active]="showUserMenu">
+          <div class="user-avatar" (click)="toggleUserMenu()">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="user-info" (click)="toggleUserMenu()">
+            <span class="user-name">{{ currentUser?.first_name }} {{ currentUser?.last_name }}</span>
+            <span class="user-role">Member #{{ currentUser?.member_number }}</span>
+          </div>
+          <div class="user-dropdown">
+            <i class="fas fa-chevron-down" (click)="toggleUserMenu()"></i>
+            <div class="dropdown-menu" *ngIf="showUserMenu">
+              <a href="#" class="dropdown-item" (click)="viewProfile()">
+                <i class="fas fa-user"></i>
+                Profile
+              </a>
+              <a href="#" class="dropdown-item" (click)="viewSettings()">
+                <i class="fas fa-cog"></i>
+                Settings
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item logout" (click)="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>

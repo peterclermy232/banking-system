@@ -1,0 +1,13 @@
+<div class="loading-overlay" *ngIf="isLoading" [@fadeInOut]>
+      <div class="loading-container">
+        <div class="loading-spinner">
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+          <div class="spinner-ring"></div>
+        </div>
+        <div class="loading-text" *ngIf="loadingMessage">
+          {{ loadingMessage }}
+        </div>
+      </div>
+    </div>

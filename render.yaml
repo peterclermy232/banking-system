@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: sacco-frontend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_BASE_URL
+        value: https://sacco-banking-latest.onrender.com/api/v1

@@ -1,0 +1,359 @@
+<div class="savings-container">
+  <div class="page-header">
+    <h1>Savings & Goals</h1>
+    <button class="btn-primary" (click)="showNewGoalForm = true" [disabled]="loading">
+      <i class="fas fa-plus"></i>
+      New Savings Goal
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-spinner">
+    <i class="fas fa-spinner fa-spin"></i>
+    Loading savings data...
+  </div>
+
+  <!-- Savings Overview -->
+  <div class="savings-overview" *ngIf="!loading">
+    <div class="overview-card primary">
+      <div class="card-icon">
+        <i class="fas fa-wallet"></i>
+      </div>
+      <div class="card-content">
+        <h3>{{ formatCurrency(totalSavings) }}</h3>
+        <p>Total Savings</p>
+        <div class="growth-indicator positive">
+          <i class="fas fa-arrow-up"></i>
+          +12.5% this month
+        </div>
+      </div>
+    </div>
+
+    <div class="overview-card">
+      <div class="card-icon">
+        <i class="fas fa-target"></i>
+      </div>
+      <div class="card-content">
+        <h3>{{ activeGoals }}</h3>
+        <p>Active Goals</p>
+        <div class="progress-small">
+          <div class="progress-bar-small">
+            <div class="progress-fill-small" [style.width.%]="averageProgressPercentage"></div>
+          </div>
+          <span>{{ averageProgressPercentage }}% average progress</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="overview-card">
+      <div class="card-icon">
+        <i class="fas fa-calendar-check"></i>
+      </div>
+      <div class="card-content">
+        <h3>{{ formatCurrency(monthlyTarget) }}</h3>
+        <p>Monthly Target</p>
+        <div class="achievement-badge">
+          <i class="fas fa-trophy"></i>
+          Goal Achiever
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Savings Goals -->
+  <div class="savings-goals" *ngIf="!loading">
+    <h2>Your Savings Goals</h2>
+
+    <!-- Empty State -->
+    <div *ngIf="savingsGoals.length === 0" class="empty-state">
+      <i class="fas fa-target fa-3x"></i>
+      <h3>No Savings Goals Yet</h3>
+      <p>Create your first savings goal to start building your financial future.</p>
+      <button class="btn-primary" (click)="showNewGoalForm = true">
+        Create Your First Goal
+      </button>
+    </div>
+
+    <!-- Goals Grid -->
+    <div class="goals-grid" *ngIf="savingsGoals.length > 0">
+      <div class="goal-card" *ngFor="let goal of savingsGoals"
+           [ngClass]="{'overdue': isGoalOverdue(goal.targetDate)}">
+        <div class="goal-header">
+          <h3>{{ goal.goalName }}</h3>
+          <div class="goal-menu">
+            <i class="fas fa-ellipsis-v"></i>
+          </div>
+        </div>
+
+        <div class="goal-progress">
+          <div class="progress-circle">
+            <svg width="80" height="80">
+              <circle cx="40" cy="40" r="35" stroke="#e0e0e0" stroke-width="6" fill="none"/>
+              <circle
+                cx="40"
+                cy="40"
+                r="35"
+                [attr.stroke]="getProgressColor(goal.progressPercentage)"
+                stroke-width="6"
+                fill="none"
+                [style.stroke-dasharray]="220"
+                [style.stroke-dashoffset]="220 - (goal.progressPercentage / 100 * 220)"
+                style="transform: rotate(-90deg); transform-origin: 40px 40px;"/>
+            </svg>
+            <div class="progress-percentage">
+              {{ goal.progressPercentage.toFixed(0) }}%
+            </div>
+          </div>
+
+          <div class="goal-details">
+            <div class="amount-info">
+              <span class="current">{{ formatCurrency(goal.currentAmount) }}</span>
+              <span class="target">of {{ formatCurrency(goal.targetAmount) }}</span>
+            </div>
+            <div class="timeline">
+              <i class="fas fa-calendar"></i>
+              Target: {{ goal.targetDate | date:'MMM y' }}
+              <span *ngIf="isGoalOverdue(goal.targetDate)" class="overdue-badge">Overdue</span>
+            </div>
+            <div class="contribution" *ngIf="goal.monthlyContribution">
+              <i class="fas fa-coins"></i>
+              {{ formatCurrency(goal.monthlyContribution) }}/month suggested
+            </div>
+            <div class="days-remaining" *ngIf="!isGoalOverdue(goal.targetDate)">
+              <i class="fas fa-clock"></i>
+              {{ calculateDaysRemaining(goal.targetDate) }} days remaining
+            </div>
+          </div>
+        </div>
+
+        <div class="goal-actions">
+          <button class="btn-primary" (click)="addMoneyToGoal(goal.id)" [disabled]="depositing">
+            <i class="fas fa-plus-circle"></i>
+            Add Money
+          </button>
+          <button class="btn-outline" (click)="viewGoalDetails(goal.id)">
+            <i class="fas fa-eye"></i>
+            View Details
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Deposit -->
+  <div class="quick-deposit" *ngIf="!loading">
+    <h2>Quick Deposit</h2>
+    <div class="deposit-card">
+      <!-- Account Selection -->
+      <div class="account-selection" *ngIf="availableAccounts.length > 0">
+        <label>From Account:</label>
+        <select class="form-control"
+                [(ngModel)]="selectedFromAccount"
+                [class.is-invalid]="!selectedFromAccount && depositAttempted">
+          <option value="">Select account</option>
+          <option *ngFor="let account of availableAccounts" [value]="account.number">
+            {{ account.name }} - {{ formatCurrency(account.balance) }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="!selectedFromAccount && depositAttempted">
+          Please select an account
+        </div>
+      </div>
+
+      <!-- Quick Amount Buttons -->
+      <div class="deposit-amounts">
+        <button class="amount-btn"
+                *ngFor="let amount of quickAmounts"
+                (click)="selectAmount(amount)"
+                [class.active]="customDepositAmount === amount">
+          {{ formatCurrency(amount) }}
+        </button>
+        <button class="amount-btn custom"
+                (click)="showCustomAmountInput()"
+                [class.active]="showCustomAmount">
+          Custom
+        </button>
+      </div>
+
+      <!-- Custom Amount Input -->
+      <div class="custom-amount" *ngIf="showCustomAmount">
+        <input
+          type="number"
+          [(ngModel)]="customDepositAmount"
+          (ngModelChange)="onCustomAmountChange()"
+          placeholder="Enter amount"
+          class="form-control"
+          min="10"
+          step="10">
+      </div>
+
+      <div class="deposit-options">
+        <!-- Deposit Destination -->
+        <div class="option-group">
+          <label>Deposit To:</label>
+          <select class="form-control" [(ngModel)]="selectedDepositGoal">
+            <option value="general">General Savings</option>
+            <option *ngFor="let goal of savingsGoals" [value]="goal.goalName">
+              {{ goal.goalName }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="option-group">
+          <label>Payment Method:</label>
+          <div class="payment-methods">
+            <button class="payment-btn"
+                    [class.active]="selectedPaymentMethod === 'bank'"
+                    (click)="selectPaymentMethod('bank')">
+              <i class="fas fa-university"></i>
+              Bank Transfer
+            </button>
+            <button class="payment-btn"
+                    [class.active]="selectedPaymentMethod === 'mpesa'"
+                    (click)="selectPaymentMethod('mpesa')">
+              <i class="fas fa-mobile-alt"></i>
+              M-Pesa
+            </button>
+            <button class="payment-btn"
+                    [class.active]="selectedPaymentMethod === 'card'"
+                    (click)="selectPaymentMethod('card')">
+              <i class="fas fa-credit-card"></i>
+              Debit Card
+            </button>
+          </div>
+        </div>
+
+        <!-- Reference Field -->
+        <div class="option-group">
+          <label>Reference (Optional):</label>
+          <input type="text"
+                 class="form-control"
+                 [(ngModel)]="referenceText"
+                 placeholder="Payment reference">
+        </div>
+      </div>
+
+      <button class="btn-primary deposit-btn"
+              (click)="makeDeposit()"
+              [disabled]="isDepositButtonDisabled()">
+        <i class="fas fa-spinner fa-spin" *ngIf="depositing"></i>
+        <i class="fas fa-plus-circle" *ngIf="!depositing"></i>
+        {{ depositing ? 'Processing...' : 'Deposit Money' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- New Goal Form Modal -->
+  <div class="goal-modal" *ngIf="showNewGoalForm">
+    <div class="modal-overlay" (click)="closeNewGoalForm()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create New Savings Goal</h2>
+        <button class="close-btn" (click)="closeNewGoalForm()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="newGoalForm" (ngSubmit)="createSavingsGoal()" class="goal-form">
+        <div class="form-group">
+          <label>Goal Name *</label>
+          <input type="text"
+                 class="form-control"
+                 formControlName="goalName"
+                 [class.is-invalid]="isFieldInvalid(newGoalForm, 'goalName')"
+                 placeholder="e.g., Emergency Fund, Vacation">
+          <div class="invalid-feedback" *ngIf="isFieldInvalid(newGoalForm, 'goalName')">
+            {{ getFieldError(newGoalForm, 'goalName') }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea class="form-control"
+                    formControlName="description"
+                    rows="3"
+                    placeholder="Describe your savings goal..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Target Amount (KSH) *</label>
+            <input type="number"
+                   class="form-control"
+                   formControlName="targetAmount"
+                   [class.is-invalid]="isFieldInvalid(newGoalForm, 'targetAmount')"
+                   placeholder="100,000"
+                   min="100"
+                   step="100">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid(newGoalForm, 'targetAmount')">
+              {{ getFieldError(newGoalForm, 'targetAmount') }}
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Target Date *</label>
+            <input type="date"
+                   class="form-control"
+                   formControlName="targetDate"
+                   [class.is-invalid]="isFieldInvalid(newGoalForm, 'targetDate')"
+                   [min]="today">
+            <div class="invalid-feedback" *ngIf="isFieldInvalid(newGoalForm, 'targetDate')">
+              {{ getFieldError(newGoalForm, 'targetDate') }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Predicted Monthly Contribution -->
+        <div class="form-group" *ngIf="getFormControlValue('targetAmount') && getFormControlValue('targetDate')">
+          <div class="prediction-card">
+            <i class="fas fa-calculator"></i>
+            <div>
+              <strong>Suggested Monthly Contribution:</strong>
+              <span class="amount">{{ calculateSuggestedContribution() | currency:'KES':'symbol':'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="closeNewGoalForm()" [disabled]="loading">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="!newGoalForm.valid || loading">
+            <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
+            <i class="fas fa-target" *ngIf="!loading"></i>
+            {{ loading ? 'Creating...' : 'Create Goal' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Goal Details Modal -->
+  <div class="goal-details-modal" *ngIf="selectedGoalForDetails">
+    <div class="modal-overlay" (click)="selectedGoalForDetails = null"></div>
+    <div class="modal-content large">
+      <div class="modal-header">
+        <h2>{{ selectedGoalForDetails.goalName }}</h2>
+        <button class="close-btn" (click)="selectedGoalForDetails = null">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="goal-details-content">
+        <!-- Goal progress chart, transaction history, etc. -->
+        <div class="progress-section">
+          <h3>Progress Overview</h3>
+          <div class="large-progress-circle">
+            <!-- Detailed progress visualization -->
+            <p>Current Amount: {{ formatCurrency(selectedGoalForDetails.currentAmount) }}</p>
+            <p>Target Amount: {{ formatCurrency(selectedGoalForDetails.targetAmount) }}</p>
+            <p>Progress: {{ selectedGoalForDetails.progressPercentage.toFixed(1) }}%</p>
+          </div>
+        </div>
+        <div class="transactions-section">
+          <h3>Recent Deposits</h3>
+          <p>Transaction history for this goal would be displayed here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,252 @@
+<!-- src/app/components/member-details/members-details.component.html -->
+<div class="member-details-container">
+  <!-- Header with navigation -->
+  <div class="page-header">
+    <div class="header-left">
+      <button class="btn-back" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i>
+        Back to Members
+      </button>
+      <div class="breadcrumb">
+        <span>Members</span>
+        <i class="fas fa-chevron-right"></i>
+        <span>{{ member?.firstName }} {{ member?.lastName }}</span>
+      </div>
+    </div>
+    <div class="header-actions" *ngIf="member && !loading">
+      <button class="btn-icon" title="Refresh" (click)="refreshData()">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+      <button class="btn-icon" title="Print" (click)="printMemberDetails()">
+        <i class="fas fa-print"></i>
+      </button>
+      <button class="btn-icon" title="Export" (click)="exportMemberData()">
+        <i class="fas fa-download"></i>
+      </button>
+      <button class="btn-primary" (click)="editMember()">
+        <i class="fas fa-edit"></i>
+        Edit Member
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p>Loading member details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-container" *ngIf="error && !loading">
+    <div class="error-icon">
+      <i class="fas fa-exclamation-triangle"></i>
+    </div>
+    <h3>Unable to Load Member Details</h3>
+    <p>{{ error }}</p>
+    <div class="error-actions">
+      <button class="btn-primary" (click)="loadMemberDetails()">
+        <i class="fas fa-redo"></i>
+        Try Again
+      </button>
+      <button class="btn-secondary" (click)="goBack()">
+        Back to Members
+      </button>
+    </div>
+  </div>
+
+  <!-- Member Details Content -->
+  <div class="member-details-content" *ngIf="member && !loading && !error">
+    <!-- Member Profile Card -->
+    <div class="member-profile-card">
+      <div class="profile-section">
+        <div class="profile-avatar">
+          {{ member.firstName.charAt(0) }}{{ member.lastName.charAt(0) }}
+        </div>
+        <div class="profile-info">
+          <h1>{{ member.firstName }} {{ member.lastName }}</h1>
+          <p class="member-number">Member #{{ member.memberNumber }}</p>
+          <span class="status-badge" [ngClass]="member.status">
+            <i class="fas fa-circle"></i>
+            {{ member.status | titlecase }}
+          </span>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn-outline" (click)="editMember()">
+          <i class="fas fa-edit"></i>
+          Edit
+        </button>
+        <button class="btn-outline warning" (click)="suspendMember()" *ngIf="member.status !== 'SUSPENDED'">
+          <i class="fas fa-ban"></i>
+          Suspend
+        </button>
+        <button class="btn-outline danger" (click)="deleteMember()">
+          <i class="fas fa-trash"></i>
+          Delete
+        </button>
+      </div>
+    </div>
+
+    <!-- Financial Overview Cards -->
+    <div class="financial-overview">
+      <div class="financial-card savings">
+        <div class="card-icon">
+          <i class="fas fa-piggy-bank"></i>
+        </div>
+        <div class="card-content">
+          <h3>Total Savings</h3>
+          <p class="amount">KSH {{ member.totalSavings | number:'1.2-2' }}</p>
+        </div>
+      </div>
+      <div class="financial-card shares">
+        <div class="card-icon">
+          <i class="fas fa-chart-pie"></i>
+        </div>
+        <div class="card-content">
+          <h3>Share Capital</h3>
+          <p class="amount">KSH {{ (member.shareCapital || 0) | number:'1.2-2' }}</p>
+        </div>
+      </div>
+      <div class="financial-card loans">
+        <div class="card-icon">
+          <i class="fas fa-hand-holding-usd"></i>
+        </div>
+        <div class="card-content">
+          <h3>Loan Balance</h3>
+          <p class="amount">KSH {{ member.loanBalance | number:'1.2-2' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details Sections -->
+    <div class="details-grid">
+      <!-- Personal Information -->
+      <div class="detail-section">
+        <div class="section-header">
+          <h3><i class="fas fa-user"></i> Personal Information</h3>
+        </div>
+        <div class="section-content">
+          <div class="detail-row">
+            <label>Full Name</label>
+            <span>{{ member.firstName }} {{ member.lastName }}</span>
+          </div>
+          <div class="detail-row">
+            <label>ID Number</label>
+            <span>{{ member.idNumber || 'Not provided' }}</span>
+          </div>
+          <div class="detail-row">
+            <label>Date of Birth</label>
+            <span>{{ member.dateOfBirth ? (member.dateOfBirth | date:'MMM d, y') : 'Not provided' }}</span>
+          </div>
+          <div class="detail-row">
+            <label>Member Since</label>
+            <span>{{ member.dateJoined | date:'MMM d, y' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="detail-section">
+        <div class="section-header">
+          <h3><i class="fas fa-address-book"></i> Contact Information</h3>
+        </div>
+        <div class="section-content">
+          <div class="detail-row">
+            <label>Email Address</label>
+            <span>
+              <a href="mailto:{{ member.email }}" class="contact-link">
+                {{ member.email }}
+              </a>
+            </span>
+          </div>
+          <div class="detail-row">
+            <label>Phone Number</label>
+            <span>
+              <a href="tel:{{ member.phoneNumber }}" class="contact-link">
+                {{ member.phoneNumber }}
+              </a>
+            </span>
+          </div>
+          <div class="detail-row full-width">
+            <label>Physical Address</label>
+            <span>{{ member.physicalAddress || 'Not provided' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employment Information -->
+      <div class="detail-section" *ngIf="member.employer || member.monthlyIncome">
+        <div class="section-header">
+          <h3><i class="fas fa-briefcase"></i> Employment Information</h3>
+        </div>
+        <div class="section-content">
+          <div class="detail-row">
+            <label>Employer</label>
+            <span>{{ member.employer || 'Not provided' }}</span>
+          </div>
+          <div class="detail-row">
+            <label>Monthly Income</label>
+            <span>
+              {{ member.monthlyIncome ? ('KSH ' + (member.monthlyIncome | number:'1.2-2')) : 'Not disclosed' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Activity -->
+      <div class="detail-section">
+        <div class="section-header">
+          <h3><i class="fas fa-chart-line"></i> Account Activity</h3>
+        </div>
+        <div class="section-content">
+          <div class="detail-row">
+            <label>Account Status</label>
+            <span class="status-badge small" [ngClass]="member.status">
+              {{ member.status | titlecase }}
+            </span>
+          </div>
+          <div class="detail-row">
+            <label>Last Transaction</label>
+            <span>{{ formatDate(member?.lastTransactionDate) }}</span>
+          </div>
+          <div class="detail-row">
+            <label>Account Created</label>
+            <span>{{ formatDate(member?.createdAt) }}</span>
+          </div>
+          <div class="detail-row">
+            <label>Last Updated</label>
+            <span>{{ formatDate(member?.updatedAt) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-section">
+      <div class="action-buttons">
+        <button class="btn-primary" (click)="editMember()">
+          <i class="fas fa-edit"></i>
+          Edit Member Details
+        </button>
+        <button class="btn-secondary" (click)="printMemberDetails()">
+          <i class="fas fa-print"></i>
+          Print Details
+        </button>
+        <button class="btn-secondary" (click)="exportMemberData()">
+          <i class="fas fa-download"></i>
+          Export Data
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Member Modal -->
+  <app-member-edit-modal
+    [member]="member"
+    [isVisible]="showEditModal"
+    (close)="onEditModalClose()"
+    (memberUpdated)="onMemberUpdated($event)">
+  </app-member-edit-modal>
+</div>

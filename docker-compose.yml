@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  sacco-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - sacco-network
+
+networks:
+  sacco-network:
+    driver: bridge

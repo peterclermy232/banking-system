@@ -1,0 +1,178 @@
+<div class="loans-container">
+      <div class="page-header">
+        <h1>Loans & Credit</h1>
+        <button class="btn-primary" (click)="showNewLoanForm = true">
+          <i class="fas fa-plus"></i>
+          Apply for Loan
+        </button>
+      </div>
+
+      <!-- Loan Overview -->
+      <div class="loans-overview">
+        <div class="overview-card">
+          <div class="card-icon">
+            <i class="fas fa-hand-holding-usd"></i>
+          </div>
+          <div class="card-content">
+            <h3>KSH {{ totalLoanBalance | number:'1.2-2' }}</h3>
+            <p>Total Outstanding</p>
+          </div>
+        </div>
+
+        <div class="overview-card">
+          <div class="card-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <div class="card-content">
+            <h3>KSH {{ nextPaymentAmount | number:'1.2-2' }}</h3>
+            <p>Next Payment Due</p>
+          </div>
+        </div>
+
+        <div class="overview-card">
+          <div class="card-icon">
+            <i class="fas fa-percentage"></i>
+          </div>
+          <div class="card-content">
+            <h3>{{ creditScore }}</h3>
+            <p>Credit Score</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Loans -->
+      <div class="active-loans">
+        <h2>Your Loans</h2>
+        <div class="loans-grid">
+          <div class="loan-card" *ngFor="let loan of activeLoans">
+            <div class="loan-header">
+              <h3>{{ loan.type }}</h3>
+              <span class="loan-status" [class]="loan.status">{{ loan.status }}</span>
+            </div>
+
+            <div class="loan-details">
+              <div class="detail-row">
+                <span>Original Amount:</span>
+                <span>KSH {{ loan.amount | number:'1.2-2' }}</span>
+              </div>
+              <div class="detail-row">
+                <span>Outstanding:</span>
+                <span>KSH {{ loan.balance | number:'1.2-2' }}</span>
+              </div>
+              <div class="detail-row">
+                <span>Interest Rate:</span>
+                <span>{{ loan.interestRate }}% p.a.</span>
+              </div>
+              <div class="detail-row">
+                <span>Monthly Payment:</span>
+                <span>KSH {{ loan.monthlyPayment | number:'1.2-2' }}</span>
+              </div>
+              <div class="detail-row">
+                <span>Next Payment:</span>
+                <span>{{ loan.nextPaymentDate | date:'MMM d, y' }}</span>
+              </div>
+            </div>
+
+            <div class="loan-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="((loan.amount - loan.balance) / loan.amount) * 100"></div>
+              </div>
+              <span class="progress-text">{{ ((loan.amount - loan.balance) / loan.amount * 100) | number:'1.0-0' }}% paid</span>
+            </div>
+
+            <div class="loan-actions">
+              <button class="btn-secondary">Make Payment</button>
+              <button class="btn-outline">View Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Loan Application Form -->
+      <div class="loan-application" *ngIf="showNewLoanForm">
+        <div class="form-overlay" (click)="showNewLoanForm = false"></div>
+        <div class="form-modal">
+          <div class="modal-header">
+            <h2>Apply for New Loan</h2>
+            <button class="close-btn" (click)="showNewLoanForm = false">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <form class="loan-form" *ngIf="loanApplication"  #loanForm="ngForm" (ngSubmit)="submitLoanApplication()">
+            <div class="form-group">
+              <label>Loan Type</label>
+              <select class="form-control" [(ngModel)]="loanApplication.loanType" name="loanType">
+                <option value="">Select loan type</option>
+                <option *ngFor="let type of loanTypes" [value]="type">
+                  {{ type.replace('_', ' ').toLowerCase() | titlecase }}
+                </option>
+              </select>
+            </div>
+
+
+            <div class="form-group">
+              <label>Loan Amount (KSH)</label>
+              <input type="number" class="form-control" required [(ngModel)]="loanApplication.amount" name="amount" placeholder="Enter amount">
+            </div>
+
+            <div class="form-group">
+              <label>Repayment Period</label>
+              <select class="form-control" required [(ngModel)]="loanApplication.termMonths" name="termMonths">
+                <option value="">Select period</option>
+                <option value="6">6 Months</option>
+                <option value="12">12 Months</option>
+                <option value="24">24 Months</option>
+                <option value="36">36 Months</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Purpose of Loan</label>
+              <textarea class="form-control" rows="3" required [(ngModel)]="loanApplication.purpose" name="purpose" placeholder="Describe the purpose of this loan"></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" (click)="showNewLoanForm = false">Cancel</button>
+              <button type="submit" class="btn-primary">Submit Application</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Loan Calculator -->
+      <div class="loan-calculator">
+        <h2>Loan Calculator</h2>
+        <div class="calculator-card">
+          <div class="calculator-inputs">
+            <div class="input-group">
+              <label>Amount (KSH)</label>
+              <input type="number" [(ngModel)]="calculatorAmount" class="form-control">
+            </div>
+            <div class="input-group">
+              <label>Period (Months)</label>
+              <input type="number" [(ngModel)]="calculatorPeriod" class="form-control">
+            </div>
+            <div class="input-group">
+              <label>Interest Rate (%)</label>
+              <input type="number" [(ngModel)]="calculatorRate" class="form-control">
+            </div>
+          </div>
+
+          <div class="calculator-result">
+            <h3>Monthly Payment</h3>
+            <div class="payment-amount">KSH {{ calculateMonthlyPayment() | number:'1.2-2' }}</div>
+            <div class="payment-breakdown">
+              <div class="breakdown-item">
+                <span>Total Interest:</span>
+                <span>KSH {{ calculateTotalInterest() | number:'1.2-2' }}</span>
+              </div>
+              <div class="breakdown-item">
+                <span>Total Amount:</span>
+                <span>KSH {{ calculateTotalAmount() | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
