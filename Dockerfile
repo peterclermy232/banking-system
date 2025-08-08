@@ -6,13 +6,13 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci --only=production && npm install -g @angular/cli
 
 # Copy source code
 COPY . .
 
 # Build the application for production
-RUN npm run build --prod
+RUN npm run build -- --configuration=production
 
 # Stage 2: Serve the application with Nginx
 FROM nginx:alpine
