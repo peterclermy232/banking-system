@@ -1,5 +1,5 @@
 // src/app/components/member-edit-modal/member-edit-modal.component.ts
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Member } from 'src/app/models/account.model';
 import { ApiService } from 'src/app/services/api.service';
@@ -34,11 +34,11 @@ export class MemberEditModalComponent implements OnInit {
     }
   }
 
-  ngOnChanges(): void {
-    if (this.member && this.editForm) {
-      this.populateForm();
-    }
+  ngOnChanges(changes: SimpleChanges): void {
+  if (changes['member'] && this.member && this.editForm) {
+    this.populateForm();
   }
+}
 
   private createForm(): FormGroup {
     return this.fb.group({
@@ -47,12 +47,12 @@ export class MemberEditModalComponent implements OnInit {
       lastName: ['', [Validators.required, Validators.minLength(2)]],
       idNumber: ['', [Validators.pattern(/^\d{8}$/)]],
       dateOfBirth: [''],
-      
+
       // Contact Information
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', [Validators.required, Validators.pattern(/^(\+254|0)[17]\d{8}$/)]],
-      physicalAddress: [''],
-      
+      address: [''],
+
       // Employment Information (optional)
       employer: [''],
       monthlyIncome: ['', [Validators.min(0)]]
@@ -69,7 +69,7 @@ export class MemberEditModalComponent implements OnInit {
       dateOfBirth: this.member.dateOfBirth ? this.formatDateForInput(this.member.dateOfBirth) : '',
       email: this.member.email,
       phoneNumber: this.member.phoneNumber,
-      physicalAddress: this.member.physicalAddress || '',
+      address: this.member.address || '',
       employer: this.member.employer || '',
       monthlyIncome: this.member.monthlyIncome || ''
     });
@@ -151,7 +151,7 @@ export class MemberEditModalComponent implements OnInit {
     if (!field || !field.errors) return '';
 
     const errors = field.errors;
-    
+
     if (errors['required']) return `${this.getFieldLabel(fieldName)} is required`;
     if (errors['email']) return 'Please enter a valid email address';
     if (errors['pattern']) {
@@ -172,10 +172,11 @@ export class MemberEditModalComponent implements OnInit {
       dateOfBirth: 'Date of Birth',
       email: 'Email Address',
       phoneNumber: 'Phone Number',
-      physicalAddress: 'Physical Address',
+      address: 'Physical Address',
       employer: 'Employer',
       monthlyIncome: 'Monthly Income'
     };
     return labels[fieldName] || fieldName;
   }
+
 }

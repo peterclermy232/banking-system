@@ -26,16 +26,16 @@
     <div class="modal-content">
       <!-- Tab Navigation -->
       <div class="tab-navigation">
-        <button 
-          class="tab-button" 
+        <button
+          class="tab-button"
           [class.active]="activeTab === 'personal'"
           (click)="switchTab('personal')"
           type="button">
           <i class="fas fa-user"></i>
           Personal Information
         </button>
-        <button 
-          class="tab-button" 
+        <button
+          class="tab-button"
           [class.active]="activeTab === 'contact'"
           (click)="switchTab('contact')"
           type="button">
@@ -53,7 +53,7 @@
               <i class="fas fa-user"></i>
               Personal Details
             </h4>
-            
+
             <div class="form-row">
               <div class="form-group">
                 <label for="firstName">
@@ -124,7 +124,7 @@
                 <i class="fas fa-briefcase"></i>
                 Employment Information (Optional)
               </h5>
-              
+
               <div class="form-row">
                 <div class="form-group">
                   <label for="employer">Employer</label>
@@ -163,7 +163,7 @@
               <i class="fas fa-address-book"></i>
               Contact Details
             </h4>
-            
+
             <div class="form-group">
               <label for="email">
                 Email Address <span class="required">*</span>
@@ -201,10 +201,10 @@
             </div>
 
             <div class="form-group">
-              <label for="physicalAddress">Physical Address</label>
+              <label for="address">Physical Address</label>
               <textarea
-                id="physicalAddress"
-                formControlName="physicalAddress"
+                id="address"
+                formControlName="address"
                 class="form-control"
                 rows="3"
                 placeholder="Enter physical address"></textarea>
@@ -214,15 +214,15 @@
 
         <!-- Modal Footer -->
         <div class="modal-footer">
-          <button 
-            type="button" 
-            class="btn-secondary" 
+          <button
+            type="button"
+            class="btn-secondary"
             (click)="closeModal()"
             [disabled]="isSubmitting">
             Cancel
           </button>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             class="btn-primary"
             [disabled]="editForm.invalid || isSubmitting">
             <i class="fas fa-spinner fa-spin" *ngIf="isSubmitting"></i>

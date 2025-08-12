@@ -3,10 +3,10 @@
     <h1>Members Management</h1>
     <div class="header-actions">
       <button class="btn-icon" title="Refresh Data" (click)="refreshData()">
-        <i class="fas fa-sync-alt"></i>
+        <i class="fas fa-sync-alt">Refresh</i>
       </button>
       <button class="btn-icon" title="Export Members" (click)="exportMembers()">
-        <i class="fas fa-download"></i>
+        <i class="fas fa-download">Export</i>
       </button>
       <button class="btn-primary" (click)="addNewMember()">
         <i class="fas fa-user-plus"></i>
@@ -127,8 +127,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let member of paginatedMembers; let i = index" 
-              class="member-row" 
+          <tr *ngFor="let member of paginatedMembers; let i = index"
+              class="member-row"
               (click)="viewMemberDetails(member)">
             <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
             <td class="member-number">{{ member.memberNumber }}</td>
@@ -159,17 +159,17 @@
             <td class="amount">KSH {{ member.loanBalance | number:'1.2-2' }}</td>
             <td class="actions-cell" (click)="$event.stopPropagation()">
               <div class="action-buttons">
-                <button class="btn-action view" 
-                        title="View Details" 
+                <button class="btn-action view"
+                        title="View Details"
                         (click)="viewMemberDetails(member)">
                   <i class="fas fa-eye">View</i>
                 </button>
-                <button class="btn-action edit" 
-                        title="Edit Member" 
+                <!-- <button class="btn-action edit"
+                        title="Edit Member"
                         (click)="editMember(member)">
                   <i class="fas fa-edit">edit</i>
-                </button>
-                <div class="dropdown">
+                </button> -->
+                <!-- <div class="dropdown">
                   <button class="btn-action more" title="More Actions">
                     <i class="fas fa-ellipsis-v">More</i>
                   </button>
@@ -184,7 +184,7 @@
                       <i class="fas fa-download">Export</i>
                     </a>
                   </div>
-                </div>
+                </div> -->
               </div>
             </td>
           </tr>
@@ -211,8 +211,8 @@
     Page {{ currentPage }} of {{ totalPages }}
   </div>
   <div class="pagination-buttons">
-    <button class="btn-pagination" 
-            (click)="prevPage()" 
+    <button class="btn-pagination"
+            (click)="prevPage()"
             [disabled]="currentPage === 1">
       <i class="fas fa-chevron-left"></i>
       Previous
@@ -228,8 +228,8 @@
         </button>
       </ng-container>
     </div>
-    <button class="btn-pagination" 
-            (click)="nextPage()" 
+    <button class="btn-pagination"
+            (click)="nextPage()"
             [disabled]="currentPage === totalPages">
       Next
       <i class="fas fa-chevron-right"></i>

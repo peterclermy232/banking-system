@@ -9,6 +9,7 @@ interface MenuItem {
   icon: string;
   badge?: number;
   children?: MenuItem[];
+  requiredRoles?: string[];
 }
 
 @Component({
@@ -45,7 +46,8 @@ export class SidebarComponent implements OnInit {
     {
       path: '/members',
       label: 'Members',
-      icon: 'fa-users'
+      icon: 'fa-users',
+      requiredRoles: ['ROLE_ADMIN']
     }
   ];
 
@@ -57,6 +59,22 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    // Get roles from backend dashboard data
+  this.apiService.getDashboardData().subscribe({
+    next: (data: any) => {
+      // Replace local currentUser roles with fresh backend roles
+      this.currentUser = {
+        ...this.currentUser,
+        roles: data.roles
+      };
+      console.log('Updated current user roles:', this.currentUser.roles);
+
+    },
+    error: (err) => {
+      console.error('Failed to load roles for sidebar:', err);
+    }
+  });
     // Listen for route changes to update active states
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -136,4 +154,17 @@ export class SidebarComponent implements OnInit {
   private saveSidebarPreferences(): void {
     localStorage.setItem('sidebar-collapsed', JSON.stringify(this.isCollapsed));
   }
+
+  hasRequiredRole(requiredRoles?: string[]): boolean {
+  if (!requiredRoles || requiredRoles.length === 0) {
+    return true; // no role restriction
+  }
+
+  return requiredRoles.some(reqRole =>
+    this.currentUser?.roles?.some((r: any) =>
+      typeof r === 'string' ? r === reqRole : r.name === reqRole
+    )
+  );
+}
+
 }

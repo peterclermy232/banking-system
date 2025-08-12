@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { NotificationService } from './notification.service';
 import { AuthResponse, BackendRegisterPayload, LoginRequest, NotificationCountResponse, RegisterRequest, SavingsDepositRequest, SavingsGoalRequest, SavingsGoalResponse, User } from '../shared/interface/saving.interface';
-import { Member } from '../models/account.model';
+import { Member, MemberResponse } from '../models/account.model';
 
 
 interface PaginatedResponse<T> {
@@ -541,6 +541,39 @@ deleteMember(memberNumber: string): Observable<void> {
       timeout(environment.apiTimeout),
       catchError(this.handleError)
     );
+}
+
+createAdmin(adminData: RegisterRequest): Observable<MemberResponse> {
+  return this.makeRequest(
+    this.http.post<MemberResponse>(`${this.API_URL}/admin/create-admin`, adminData, this.httpOptions)
+  );
+}
+
+promoteToAdmin(memberNumber: string): Observable<MemberResponse> {
+  return this.makeRequest(
+    this.http.post<MemberResponse>(`${this.API_URL}/admin/promote-to-admin/${memberNumber}`, {}, this.httpOptions)
+  );
+}
+
+demoteToMember(memberNumber: string): Observable<MemberResponse> {
+  return this.makeRequest(
+    this.http.post<MemberResponse>(`${this.API_URL}/admin/demote-to-member/${memberNumber}`, {}, this.httpOptions)
+  );
+}
+
+// Enhanced member management with role checking
+getAllMembersAdmin(page: number = 0, size: number = 10, search: string = ''): Observable<PaginatedResponse<Member>> {
+  // This method includes admin-specific data that regular members can't see
+  return this.makeRequest(
+    this.http.get<PaginatedResponse<Member>>(`${this.API_URL}/admin/members?page=${page}&size=${size}&search=${search}`)
+  );
+}
+
+// Method to check current user's permissions
+checkAdminPermissions(): Observable<{canManageMembers: boolean, canCreateAdmin: boolean}> {
+  return this.makeRequest(
+    this.http.get<{canManageMembers: boolean, canCreateAdmin: boolean}>(`${this.API_URL}/admin/permissions`)
+  );
 }
 
 }

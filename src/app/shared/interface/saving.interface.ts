@@ -71,3 +71,14 @@ export interface AuthResponse {
 export interface NotificationCountResponse {
   count: number;
 }
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+
+  // Add these optional role-related fields
+  roles?: string[];
+  role?: string;
+  authorities?: Array<{ authority: string }>;
+}

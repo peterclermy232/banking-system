@@ -10,6 +10,7 @@ import { MembersComponent } from './components/members/members/members.component
 import { authGuard } from './guards/auth.guard';
 import { MemberDetailsComponent } from './shared/modal/member-details/members-details.component';
 import { MemberEditModalComponent } from './shared/modal/edit-member/member-edit-modal.component';
+import { adminGuard } from './guards/admin.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -36,27 +37,28 @@ const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    // Members section - Admin only
     path: 'members',
     component: MembersComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard, adminGuard]
   },
   {
-    // Route for viewing member details
+    // Route for viewing member details - Admin only
     path: 'members/:memberNumber',
     component: MemberDetailsComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard, adminGuard]
   },
   {
-    // Route for editing member (if you have an edit component)
+    // Route for editing member - Admin only
     path: 'members/:memberNumber/edit',
-    component: MemberEditModalComponent, 
-    canActivate: [authGuard]
+    component: MemberEditModalComponent,
+    canActivate: [authGuard, adminGuard]
   },
   {
-    // Route for adding new member (if you have an add component)
+    // Route for adding new member - Admin only
     path: 'members/new',
-    component: MemberDetailsComponent, // Replace with MemberAddComponent if you have one
-    canActivate: [authGuard]
+    component: MemberDetailsComponent,
+    canActivate: [authGuard, adminGuard]
   },
   { path: '**', redirectTo: '/login' }
 ];
