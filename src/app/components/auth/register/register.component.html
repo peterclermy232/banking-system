@@ -9,7 +9,7 @@
         </div>
 
         <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="register-form">
-          <div class="form-row">
+          <!-- <div class="form-row">
             <div class="form-group">
               <label for="memberNumber">Member Number *</label>
               <input
@@ -26,7 +26,7 @@
                 Member number should start with 'MB' followed by numbers
               </div>
             </div>
-          </div>
+          </div> -->
 
           <div class="form-row">
             <div class="form-group half-width">
@@ -79,6 +79,25 @@
               </div>
               <div class="error-message" *ngIf="registerForm.get('email')?.errors?.['email'] && registerForm.get('email')?.touched">
                 Please enter a valid email address
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nationalId">National ID *</label>
+              <input
+                id="nationalId"
+                type="text"
+                formControlName="nationalId"
+                placeholder="e.g., 1234567890"
+                class="form-control"
+                [class.error]="registerForm.get('nationalId')?.errors && registerForm.get('nationalId')?.touched">
+              <div class="error-message" *ngIf="registerForm.get('nationalId')?.errors?.['required'] && registerForm.get('nationalId')?.touched">
+                National ID is required
+              </div>
+              <div class="error-message" *ngIf="registerForm.get('nationalId')?.errors?.['minlength'] && registerForm.get('nationalId')?.touched">
+                National ID must be at least 10 characters
               </div>
             </div>
           </div>

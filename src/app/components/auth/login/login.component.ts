@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
 
   private initializeForm(): void {
     this.loginForm = this.formBuilder.group({
-      memberNumber: ['', Validators.required],
+      username: ['', Validators.required],
       password: ['', Validators.required]
     });
   }
@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
       this.loadingService.show('Signing you in...');
 
       const credentials = {
-        memberNumber: this.loginForm.value.memberNumber,
+        username: this.loginForm.value.username,
         password: this.loginForm.value.password
       };
 

@@ -32,9 +32,13 @@ export class RegisterComponent implements OnInit {
 
   private initializeForm(): void {
     this.registerForm = this.formBuilder.group({
-      memberNumber: ['', [
+      // memberNumber: ['', [
+      //   Validators.required,
+      //   Validators.pattern(/^MB\d+$/)
+      // ]],
+      nationalId: ['', [
         Validators.required,
-        Validators.pattern(/^MB\d+$/)
+        Validators.minLength(10)
       ]],
       firstName: ['', [
         Validators.required,
@@ -137,12 +141,13 @@ export class RegisterComponent implements OnInit {
       this.loadingService.show('Creating your account...');
 
       const formData: RegisterRequest = {
-        memberNumber: this.registerForm.value.memberNumber,
+        //memberNumber: this.registerForm.value.memberNumber,
         firstName: this.registerForm.value.firstName,
         lastName: this.registerForm.value.lastName,
         email: this.registerForm.value.email,
         phoneNumber: this.registerForm.value.phoneNumber,
-        password: this.registerForm.value.password
+        password: this.registerForm.value.password,
+        nationalId: this.registerForm.value.nationalId,
       };
 
       console.log('Submitting registration data:', formData);

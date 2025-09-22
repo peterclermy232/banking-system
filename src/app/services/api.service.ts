@@ -154,7 +154,8 @@ export class ApiService {
   register(userData: RegisterRequest): Observable<any> {
     // Transform frontend data to backend format
     const backendPayload: BackendRegisterPayload = {
-      memberNumber: userData.memberNumber,
+     // memberNumber: userData.memberNumber,
+     nationalId: userData.nationalId,
       firstName: userData.firstName,
       lastName: userData.lastName,
       email: userData.email,

@@ -25,29 +25,31 @@ export interface SavingsGoalResponse {
 }
 
 export interface LoginRequest {
-  memberNumber: string;
+  username: string;
   password: string;
 }
 
 // Updated RegisterRequest to match your frontend form
 export interface RegisterRequest {
-  memberNumber: string;
+  //memberNumber: string;
   firstName: string;
   lastName: string;
   email: string;
   phoneNumber: string;
   password: string;
+  nationalId: string;
 }
 
 // Backend registration payload
 export interface BackendRegisterPayload {
-  memberNumber: string;
+  //memberNumber: string;
   firstName: string;
   lastName: string;
   email: string;
   phoneNumber: string;
   password: string;
   full_name: string;
+  nationalId: string;
 }
 
 export interface User {
